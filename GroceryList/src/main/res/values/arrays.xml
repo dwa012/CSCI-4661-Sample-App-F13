@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="items">
+        <item>Milk</item>
+        <item>Bread</item>
+        <item>Peanut Butter</item>
+        <item>Sugar</item>
+    </string-array>
+</resources>
