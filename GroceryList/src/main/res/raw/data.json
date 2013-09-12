@@ -1,0 +1,28 @@
+{
+    "items": [
+        {
+            "id": 1,
+            "name": "Milk",
+            "quantity": 4,
+            "description": "Goes well with cookies"
+        },
+        {
+            "id": 2,
+            "name": "Bread",
+            "quantity": 5,
+            "description": "Loves butter"
+        },
+        {
+            "id": 3,
+            "name": "Sugar",
+            "quantity": 2,
+            "description": "Makes everything a little sweeter"
+        },
+        {
+            "id": 4,
+            "name": "Peanut Butter",
+            "quantity": 1,
+            "description": "... jelly time"
+        }
+    ]
+}

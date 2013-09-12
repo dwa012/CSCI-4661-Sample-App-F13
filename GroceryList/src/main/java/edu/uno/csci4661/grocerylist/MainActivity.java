@@ -1,38 +1,20 @@
 package edu.uno.csci4661.grocerylist;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.os.Bundle;
 import android.view.Menu;
-import android.widget.EditText;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+import edu.uno.csci4661.grocerylist.ui.ItemListFragment;
+
+public class MainActivity extends Activity implements ItemListFragment.ListFragmentListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        EditText e = (EditText) findViewById(R.id.edit_text);
-        e.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Toast.makeText(MainActivity.this,"Text changed",Toast.LENGTH_LONG).show();
-            }
-        });
     }
+
 
     @Override
     protected void onStart() {
@@ -54,5 +36,23 @@ public class MainActivity extends Activity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onListItemSelected(int id) {
+
+//        // the detail fragment is not in the view, most likely on a smaller device
+//        if(this.getFragmentManager().findFragmentById(R.id.detail_fragment) == null) {
+//            // launch a ItemDetail Activity
+//            // you can pass a data to an activity via Extras, then pass it along to the fragment
+//        } else { // detail fragment is in view
+//            // update the existing detail fragment in the UI, usually by replacing it
+//            DetailFragment fragment = new DetailFragment();
+//            Bundle args = new Bundle();
+//            args.putInt(DetailFragment.ITEM_ID,id);
+//            fragment.setArguments(args);
+//        }
+
+        Toast.makeText(this, "id: " + id, Toast.LENGTH_SHORT).show();
     }
 }
