@@ -13,17 +13,16 @@ repositories {
 }
 
 android {
-    compileSdkVersion 18
+    compileSdkVersion 17
     buildToolsVersion "17.0.0"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 18
+        targetSdkVersion 17
     }
 }
 
 dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.android.support:support-v4:13.0.+'
-    compile 'com.android.support:appcompat-v7:18.0.+'
 }
