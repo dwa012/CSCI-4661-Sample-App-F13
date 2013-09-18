@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -57,7 +58,24 @@ public class ItemDetailFragment extends Fragment {
         TextView description = (TextView) view.findViewById(R.id.description);
         description.setText(item.getDescription());
 
+        ImageView image = (ImageView) view.findViewById(R.id.image);
+        image.setImageResource(getDrawable(item));
 
         return view;
+    }
+
+    private int getDrawable(GroceryItem item) {
+        switch (item.getId()) {
+            case 1:
+                return R.drawable.milk;
+            case 2:
+                return R.drawable.bread;
+            case 3:
+                return R.drawable.sugar;
+            case 4:
+                return R.drawable.peanut_butter;
+            default:
+                return 0;
+        }
     }
 }
