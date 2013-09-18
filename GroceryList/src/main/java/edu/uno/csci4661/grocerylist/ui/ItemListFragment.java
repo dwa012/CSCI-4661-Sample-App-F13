@@ -10,7 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uno.csci4661.grocerylist.R;
+import edu.uno.csci4661.grocerylist.model.GroceryItem;
+import edu.uno.csci4661.grocerylist.util.DataParser;
 
 public class ItemListFragment extends Fragment {
 
@@ -18,7 +24,7 @@ public class ItemListFragment extends Fragment {
         public void onListItemSelected(int id);
     }
 
-    String[] items = {"first", "second", "third"};
+    List<GroceryItem> items;
 
 
     private ListFragmentListener listener = new ListFragmentListener() {
@@ -32,13 +38,28 @@ public class ItemListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list,container);
         ListView list = (ListView) view.findViewById(R.id.listview);
-        list.setAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, items));
+
+        try {
+            items = DataParser.getData(this.getActivity());
+        } catch (IOException e) {
+            e.printStackTrace();
+            items = new ArrayList<GroceryItem>();
+        }
+
+        final String[] names = new String[items.size()];
+
+        for (int i = 0; i < items.size(); i++) {
+            names[i] = items.get(i).getName();
+        }
+
+
+        list.setAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, names));
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                //the listener now takes an id of an item
-//                listener.onListItemSelected(items[position].getId());
+                listener.onListItemSelected(items.get(position).getId());
             }
         });
 
