@@ -21,7 +21,6 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = null;
-        // TODO add the some code to inflate from a layout
 
         if (this.getArguments().size() == 0) {
             throw new IllegalArgumentException("Needs to have an item id as an argument");
