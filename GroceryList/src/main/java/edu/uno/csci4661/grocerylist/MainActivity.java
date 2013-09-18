@@ -1,6 +1,7 @@
 package edu.uno.csci4661.grocerylist;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +17,18 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // if the fragment placeholder is in view then populate it
+        if (findViewById(R.id.detail_fragment) != null) {
+            Fragment fragment = new ItemDetailFragment();
+            Bundle args = new Bundle();
+            args.putInt(ItemDetailFragment.ITEM_ID, 1);
+            fragment.setArguments(args);
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.detail_fragment, fragment);
+            ft.commit();
+        }
     }
 
     @Override
