@@ -40,7 +40,7 @@ public class ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list,container);
 
-        ListView listView = (ListView) view.findViewById(R.id.list);
+        ListView listView = (ListView) view.findViewById(R.id.listview);
         listView.setAdapter(new ArrayAdapter<String>(this.getActivity(),R.array.items));
 
         listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
