@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.IOException;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.uno.csci4661.grocerylist.R;
+import edu.uno.csci4661.grocerylist.adapters.ItemListAdapter;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.util.DataParser;
 
@@ -53,7 +53,8 @@ public class ItemListFragment extends Fragment {
         }
 
 
-        list.setAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, names));
+//        list.setAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, names));
+        list.setAdapter(new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items));
 
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
