@@ -1,7 +1,10 @@
 package edu.uno.csci4661.grocerylist.ui;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,8 @@ import edu.uno.csci4661.grocerylist.util.DataParser;
 
 public class ItemDetailFragment extends Fragment {
     public static final String ITEM_ID = "item_id";
+    private static final int ACTION_CODE = 1234;
+    private ImageView image;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,10 +62,29 @@ public class ItemDetailFragment extends Fragment {
         TextView description = (TextView) view.findViewById(R.id.description);
         description.setText(item.getDescription());
 
-        ImageView image = (ImageView) view.findViewById(R.id.image);
+        image = (ImageView) view.findViewById(R.id.image);
         image.setImageResource(getDrawable(item));
 
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePictureIntent, ACTION_CODE);
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ACTION_CODE) {
+            Bundle extras = data.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            image.setImageBitmap(bitmap);
+        }
     }
 
     private int getDrawable(GroceryItem item) {
