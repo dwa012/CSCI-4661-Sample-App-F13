@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.io.IOException;
@@ -46,23 +45,30 @@ public class ItemListFragment extends Fragment {
             items = new ArrayList<GroceryItem>();
         }
 
-        final String[] names = new String[items.size()];
+        ItemListAdapter adapter = new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items);
 
-        for (int i = 0; i < items.size(); i++) {
-            names[i] = items.get(i).getName();
-        }
-
-
-//        list.setAdapter(new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_list_item_1, names));
-        list.setAdapter(new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items));
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // have to use a custom listener since the button in the layout causes the listview listener
+        // to not work
+        adapter.setOnItemClickListener(new ItemListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                //the listener now takes an id of an item
-                listener.onListItemSelected(items.get(position).getId());
+            public void onItemClicked(int position, GroceryItem item) {
+                listener.onListItemSelected(item.getId());
             }
         });
+
+        list.setAdapter(adapter);
+
+//        This doesn't work because fo the button in the subviews.
+//        see http://tausiq.wordpress.com/2012/08/22/android-listview-example-with-custom-adapter/
+//        for more info
+
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                //the listener now takes an id of an item
+//                listener.onListItemSelected(items.get(position).getId());
+//            }
+//        });
 
 
         return view;
