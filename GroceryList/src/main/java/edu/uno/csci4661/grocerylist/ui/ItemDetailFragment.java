@@ -1,13 +1,13 @@
 package edu.uno.csci4661.grocerylist.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,12 +16,23 @@ import java.util.List;
 
 import edu.uno.csci4661.grocerylist.R;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
+import edu.uno.csci4661.grocerylist.receivers.ItemReceiver;
 import edu.uno.csci4661.grocerylist.util.DataParser;
 
 public class ItemDetailFragment extends Fragment {
     public static final String ITEM_ID = "item_id";
-    private static final int ACTION_CODE = 1234;
-    private ImageView image;
+    private GroceryItem item;
+
+    public interface OnBroadcastClickListener {
+        public void onClick(GroceryItem item);
+    }
+
+    private OnBroadcastClickListener listener = new OnBroadcastClickListener() {
+        @Override
+        public void onClick(GroceryItem item) {
+            // left blank;
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,9 +44,6 @@ public class ItemDetailFragment extends Fragment {
 
         // this will throw an exeption if no id was given
         int id = this.getArguments().getInt(ITEM_ID);
-
-        GroceryItem item = null;
-
 
         try {
             List<GroceryItem> items = DataParser.getData(this.getActivity());
@@ -62,14 +70,25 @@ public class ItemDetailFragment extends Fragment {
         TextView description = (TextView) view.findViewById(R.id.description);
         description.setText(item.getDescription());
 
-        image = (ImageView) view.findViewById(R.id.image);
+        ImageView image = (ImageView) view.findViewById(R.id.image);
         image.setImageResource(getDrawable(item));
 
-        image.setOnClickListener(new View.OnClickListener() {
+        Button shareButton = (Button) view.findViewById(R.id.share);
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(takePictureIntent, ACTION_CODE);
+                shareItem();
+            }
+        });
+
+        Button broadcastButton = (Button) view.findViewById(R.id.broadcast);
+        broadcastButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                listener.onClick(ItemDetailFragment.this.item);
+                Intent intent = new Intent(ItemReceiver.BROADCAST_ACTION);
+                intent.putExtra(Intent.EXTRA_TEXT, "Broadcasting: " + item.getName());
+                ItemDetailFragment.this.getActivity().sendBroadcast(intent);
             }
         });
 
@@ -77,14 +96,30 @@ public class ItemDetailFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-        if (requestCode == ACTION_CODE) {
-            Bundle extras = data.getExtras();
-            Bitmap bitmap = (Bitmap) extras.get("data");
-            image.setImageBitmap(bitmap);
+        try {
+            this.listener = (OnBroadcastClickListener) activity;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
         }
+    }
+
+    private void shareItem() {
+        Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+
+        String body = "Item: " + item.getName() + ", Quantity: " + item.getQuantity();
+
+        // For a file in shared storage.  For data in private storage, use a ContentProvider.
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Please pick this up at the grocery for me");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, body);
+        startActivity(shareIntent);
+    }
+
+    private void sendItemBroadcast() {
+
     }
 
     private int getDrawable(GroceryItem item) {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.uno.csci4661.grocerylist"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -12,18 +12,16 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-
+        android:theme="@style/AppTheme">
         <activity
             android:name="edu.uno.csci4661.grocerylist.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="edu.uno.csci4661.grocerylist.ui.ItemDetailActivity"
             android:label="@string/title_activity_item_detail"
@@ -31,6 +29,24 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.uno.csci4661.grocerylist.MainActivity" />
+        </activity>
+
+        <receiver android:name="edu.uno.csci4661.grocerylist.receivers.ItemReceiver">
+            <intent-filter>
+                <action android:name="edu.uno.csci4661.grocerylist.ITEM_BROADCAST" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="edu.uno.csci4661.grocerylist.ui.NewItemActivity"
+            android:label="@string/title_activity_new_item">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
         </activity>
     </application>
 
