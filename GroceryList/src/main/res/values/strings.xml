@@ -8,5 +8,8 @@
     <string name="item_name">Name</string>
     <string name="item_quantity">Quantity</string>
     <string name="item_description">Description</string>
+    <string name="share_button">share</string>
+    <string name="broadcast">Broadcast</string>
+    <string name="title_activity_new_item">Add Item</string>
 
 </resources>

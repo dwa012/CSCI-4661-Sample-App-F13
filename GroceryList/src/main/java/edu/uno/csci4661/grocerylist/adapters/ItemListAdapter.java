@@ -6,9 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -52,7 +50,6 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
             holder = new Holder();
             holder.name = (TextView) convertView.findViewById(R.id.item_name);
             holder.quantity = (TextView) convertView.findViewById(R.id.item_quantity);
-            holder.button = (Button) convertView.findViewById(R.id.item_button);
 
             convertView.setTag(holder);
         } else {
@@ -63,12 +60,6 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
 
         holder.quantity.setText(item.getQuantity() + ""); // doh! this was an int, not a String *facepalm*
         holder.name.setText(item.getName());
-        holder.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(context, "button pressed", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         // add the listener for the convertview
         final int itemPosition = position;
@@ -90,6 +81,5 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
     static class Holder {
         TextView quantity;
         TextView name;
-        Button button;
     }
 }

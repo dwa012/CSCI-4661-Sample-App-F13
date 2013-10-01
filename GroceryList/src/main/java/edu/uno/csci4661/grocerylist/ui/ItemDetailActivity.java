@@ -2,14 +2,17 @@ package edu.uno.csci4661.grocerylist.ui;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import edu.uno.csci4661.grocerylist.R;
+import edu.uno.csci4661.grocerylist.model.GroceryItem;
+import edu.uno.csci4661.grocerylist.receivers.ItemReceiver;
 
-public class ItemDetailActivity extends Activity {
+public class ItemDetailActivity extends Activity implements ItemDetailFragment.OnBroadcastClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,4 +64,10 @@ public class ItemDetailActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onClick(GroceryItem item) {
+        Intent intent = new Intent(ItemReceiver.BROADCAST_ACTION);
+        intent.putExtra(Intent.EXTRA_TEXT, "Broadcasting: " + item.getName());
+        sendBroadcast(intent);
+    }
 }
