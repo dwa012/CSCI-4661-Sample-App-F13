@@ -1,9 +1,17 @@
 package edu.uno.csci4661.grocerylist.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -24,6 +32,7 @@ public class ItemListFragment extends Fragment {
     }
 
     List<GroceryItem> items;
+    MenuItem item;
 
 
     private ListFragmentListener listener = new ListFragmentListener() {
@@ -58,18 +67,7 @@ public class ItemListFragment extends Fragment {
 
         list.setAdapter(adapter);
 
-//        This doesn't work because fo the button in the subviews.
-//        see http://tausiq.wordpress.com/2012/08/22/android-listview-example-with-custom-adapter/
-//        for more info
-
-//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                //the listener now takes an id of an item
-//                listener.onListItemSelected(items.get(position).getId());
-//            }
-//        });
-
+        setHasOptionsMenu(true);
 
         return view;
     }
@@ -82,6 +80,87 @@ public class ItemListFragment extends Fragment {
             this.listener = (ListFragmentListener) activity;
         } catch (ClassCastException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        item = menu.add("Refresh");
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == this.item.getItemId()) {
+            new FetchTask(this.getActivity()).execute();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private class FetchTask extends AsyncTask<Void, Integer, String> {
+
+        private ProgressDialog progressDialog;
+        private Context context;
+
+        private FetchTask() {
+            // left blank
+        }
+
+        public FetchTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setMax(100);
+            progressDialog.setTitle("Refreshing Data");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setProgress(0);
+            progressDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            for (int i = 0; i < 100; i++) {
+                publishProgress(i);
+
+                try {
+                    Thread.sleep(600);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return "Finished";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progressDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            progressDialog.dismiss();
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+
+            alertDialog
+                    .setMessage(s)
+                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+            alertDialog.create().show();
         }
     }
 }
