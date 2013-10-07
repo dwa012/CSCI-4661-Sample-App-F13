@@ -1,13 +1,12 @@
 package edu.uno.csci4661.grocerylist.ui;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +15,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +30,18 @@ import java.util.List;
 import edu.uno.csci4661.grocerylist.R;
 import edu.uno.csci4661.grocerylist.adapters.ItemListAdapter;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
-import edu.uno.csci4661.grocerylist.util.DataParser;
+import edu.uno.csci4661.grocerylist.model.ItemWrapper;
 
 public class ItemListFragment extends Fragment {
+
+    private ItemListAdapter adapter;
 
     public interface ListFragmentListener {
         public void onListItemSelected(int id);
     }
 
-    List<GroceryItem> items;
-    MenuItem item;
+    private List<GroceryItem> items;
+    private MenuItem item;
 
 
     private ListFragmentListener listener = new ListFragmentListener() {
@@ -46,15 +55,10 @@ public class ItemListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container);
         ListView list = (ListView) view.findViewById(R.id.listview);
+        items = new ArrayList<GroceryItem>();
 
-        try {
-            items = DataParser.getData(this.getActivity());
-        } catch (IOException e) {
-            e.printStackTrace();
-            items = new ArrayList<GroceryItem>();
-        }
 
-        ItemListAdapter adapter = new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items);
+        adapter = new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items);
 
         // have to use a custom listener since the button in the layout causes the listview listener
         // to not work
@@ -84,6 +88,13 @@ public class ItemListFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        new FetchTask(this.getActivity()).execute();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         item = menu.add("Refresh");
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -101,7 +112,7 @@ public class ItemListFragment extends Fragment {
         }
     }
 
-    private class FetchTask extends AsyncTask<Void, Integer, String> {
+    private class FetchTask extends AsyncTask<Void, Integer, List<GroceryItem>> {
 
         private ProgressDialog progressDialog;
         private Context context;
@@ -111,56 +122,49 @@ public class ItemListFragment extends Fragment {
         }
 
         public FetchTask(Context context) {
+            this();
             this.context = context;
         }
 
         @Override
         protected void onPreExecute() {
             progressDialog = new ProgressDialog(context);
-            progressDialog.setMax(100);
-            progressDialog.setTitle("Refreshing Data");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setProgress(0);
+            progressDialog.setTitle("Fetching Items");
             progressDialog.show();
         }
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected List<GroceryItem> doInBackground(Void... voids) {
+            List<GroceryItem> results = new ArrayList<GroceryItem>();
 
-            for (int i = 0; i < 100; i++) {
-                publishProgress(i);
+            HttpGet request = new HttpGet("http://csci4661-api.appspot.com/api/items");
 
-                try {
-                    Thread.sleep(600);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            HttpClient httpClient = new DefaultHttpClient();
+
+            try {
+                HttpResponse response = httpClient.execute(request);
+                String json = EntityUtils.toString(response.getEntity());
+
+                Log.d("grocerylist", json);
+
+                Gson gson = new Gson();
+                ItemWrapper items = gson.fromJson(json, ItemWrapper.class);
+                results = items.getItems();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            return "Finished";
+            return results;
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressDialog.setProgress(values[0]);
-        }
+        protected void onPostExecute(List<GroceryItem> groceryItems) {
+            ItemListFragment.this.items.clear();
+            ItemListFragment.this.items.addAll(groceryItems);
+            ItemListFragment.this.adapter.notifyDataSetChanged();
 
-        @Override
-        protected void onPostExecute(String s) {
             progressDialog.dismiss();
 
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-
-            alertDialog
-                    .setMessage(s)
-                    .setPositiveButton("Close", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-            alertDialog.create().show();
         }
     }
 }

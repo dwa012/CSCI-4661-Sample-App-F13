@@ -3,7 +3,6 @@ package edu.uno.csci4661.grocerylist.util;
 import android.content.Context;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,20 +11,18 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import edu.uno.csci4661.grocerylist.R;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
+import edu.uno.csci4661.grocerylist.model.ItemWrapper;
 
 public class DataParser {
 
     public static List<GroceryItem> getData(Context context) throws IOException {
         Gson gson = new Gson();
         String jsonOutput = readJsonFile(context);
-        Type listType = new TypeToken<ItemWrapper>() {
-        }.getType();
-        ItemWrapper items = gson.fromJson(jsonOutput, listType);
+        ItemWrapper items = gson.fromJson(jsonOutput, ItemWrapper.class);
 
         return items.getItems();
     }
@@ -49,15 +46,4 @@ public class DataParser {
         return jsonString;
     }
 
-    private class ItemWrapper {
-        private List<GroceryItem> items;
-
-        public List<GroceryItem> getItems() {
-            return items;
-        }
-
-        public void setItems(List<GroceryItem> items) {
-            this.items = items;
-        }
-    }
 }
