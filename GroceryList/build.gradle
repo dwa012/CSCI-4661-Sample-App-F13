@@ -10,6 +10,11 @@ apply plugin: 'android'
 
 repositories {
     mavenCentral()
+
+    maven {
+        url "http://wildlife.cs.uno.edu:8080/archiva/repository/internal/"
+    }
+
 }
 
 android {
@@ -25,4 +30,5 @@ android {
 dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.android.support:support-v4:13.0.+'
+    compile 'android-query:android-query:0.25.10-FULL'
 }
