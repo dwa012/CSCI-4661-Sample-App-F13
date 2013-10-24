@@ -2,6 +2,7 @@ package edu.uno.csci4661.grocerylist.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
     private Context context;
     private int resource;
     private List<GroceryItem> items;
+
+    private boolean shoudlShowQuantities;
 
     public interface OnItemClickListener {
         public void onItemClicked(int position, GroceryItem item);
@@ -41,6 +44,9 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        shoudlShowQuantities = PreferenceManager
+                .getDefaultSharedPreferences(context).getBoolean(context.getResources().getString(R.string.preference_show_quantities), true);
+
         Holder holder = null;
 
         if (convertView == null) {
@@ -58,7 +64,14 @@ public class ItemListAdapter extends ArrayAdapter<GroceryItem> {
 
         final GroceryItem item = items.get(position);
 
-        holder.quantity.setText(item.getQuantity() + ""); // doh! this was an int, not a String *facepalm*
+        // hide the quantities if not desired
+        if (shoudlShowQuantities) {
+            holder.quantity.setVisibility(View.VISIBLE);
+            holder.quantity.setText(item.getQuantity() + ""); // doh! this was an int, not a String *facepalm*
+        } else  {
+            holder.quantity.setVisibility(View.GONE);
+        }
+
         holder.name.setText(item.getName());
 
         // add the listener for the convertview

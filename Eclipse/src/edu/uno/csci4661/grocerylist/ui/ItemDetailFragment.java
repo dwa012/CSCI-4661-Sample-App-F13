@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +23,7 @@ import edu.uno.csci4661.grocerylist.receivers.ItemReceiver;
 import edu.uno.csci4661.grocerylist.util.DataParser;
 
 public class ItemDetailFragment extends Fragment {
-    public static final String ITEM_ID = "item_id";
+    public static final String ITEM = "item";
     private GroceryItem item;
 
     public interface OnBroadcastClickListener {
@@ -43,21 +46,9 @@ public class ItemDetailFragment extends Fragment {
         }
 
         // this will throw an exeption if no id was given
-        int id = this.getArguments().getInt(ITEM_ID);
-
-        try {
-            List<GroceryItem> items = DataParser.getData(this.getActivity());
-
-            for (GroceryItem groceryItem : items) {
-                if (groceryItem.getId() == id) {
-                    item = groceryItem;
-                    break;
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String json = this.getArguments().getString(ITEM);
+        Gson gson = new Gson();
+        item = gson.fromJson(json, GroceryItem.class);
 
         view = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
@@ -103,6 +94,19 @@ public class ItemDetailFragment extends Fragment {
             this.listener = (OnBroadcastClickListener) activity;
         } catch (ClassCastException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean shoudlShowQuantities = PreferenceManager
+                .getDefaultSharedPreferences(getActivity()).getBoolean(getActivity().getResources().getString(R.string.preference_show_quantities), true);
+
+        if (!shoudlShowQuantities) {
+            getView().findViewById(R.id.quantity_title).setVisibility(View.GONE);
+            getView().findViewById(R.id.quantity).setVisibility(View.GONE);
         }
     }
 

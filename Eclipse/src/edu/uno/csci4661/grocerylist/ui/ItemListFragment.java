@@ -37,7 +37,7 @@ public class ItemListFragment extends Fragment {
     private ItemListAdapter adapter;
 
     public interface ListFragmentListener {
-        public void onListItemSelected(int id);
+        public void onListItemSelected(GroceryItem item);
     }
 
     private List<GroceryItem> items;
@@ -46,7 +46,7 @@ public class ItemListFragment extends Fragment {
 
     private ListFragmentListener listener = new ListFragmentListener() {
         @Override
-        public void onListItemSelected(int id) {
+        public void onListItemSelected(GroceryItem item) {
             // left blank
         }
     };
@@ -65,7 +65,7 @@ public class ItemListFragment extends Fragment {
         adapter.setOnItemClickListener(new ItemListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(int position, GroceryItem item) {
-                listener.onListItemSelected(item.getId());
+                listener.onListItemSelected(item);
             }
         });
 
