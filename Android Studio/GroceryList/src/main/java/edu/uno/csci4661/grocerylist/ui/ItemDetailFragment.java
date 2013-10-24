@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,6 +94,19 @@ public class ItemDetailFragment extends Fragment {
             this.listener = (OnBroadcastClickListener) activity;
         } catch (ClassCastException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        boolean shoudlShowQuantities = PreferenceManager
+                .getDefaultSharedPreferences(getActivity()).getBoolean(getActivity().getResources().getString(R.string.preference_show_quantities), true);
+
+        if (!shoudlShowQuantities) {
+            getView().findViewById(R.id.quantity_title).setVisibility(View.GONE);
+            getView().findViewById(R.id.quantity).setVisibility(View.GONE);
         }
     }
 

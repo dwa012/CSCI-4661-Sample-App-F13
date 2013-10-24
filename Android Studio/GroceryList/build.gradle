@@ -28,7 +28,6 @@ android {
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.2.+'
-    compile 'com.android.support:support-v4:13.0.+'
-    compile 'android-query:android-query:0.25.10-FULL'
+	compile 'com.google.code.gson:gson:2.2.+'
+	compile 'com.android.support:support-v4:18.0.0'
 }

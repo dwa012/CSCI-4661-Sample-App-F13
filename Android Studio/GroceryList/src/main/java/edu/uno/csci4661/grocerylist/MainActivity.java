@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.gson.Gson;
 
@@ -13,6 +14,7 @@ import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailActivity;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailFragment;
 import edu.uno.csci4661.grocerylist.ui.ItemListFragment;
+import edu.uno.csci4661.grocerylist.ui.SettingsActivity;
 
 public class MainActivity extends Activity implements ItemListFragment.ListFragmentListener {
 
@@ -44,6 +46,22 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startSettingsActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     @Override
