@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 
+import com.google.gson.Gson;
+
+import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailActivity;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailFragment;
 import edu.uno.csci4661.grocerylist.ui.ItemListFragment;
@@ -22,7 +25,7 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
         if (findViewById(R.id.detail_fragment) != null) {
             Fragment fragment = new ItemDetailFragment();
             Bundle args = new Bundle();
-            args.putInt(ItemDetailFragment.ITEM_ID, 1);
+            args.putInt(ItemDetailFragment.ITEM, 1);
             fragment.setArguments(args);
 
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -54,21 +57,23 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
     }
 
     @Override
-    public void onListItemSelected(int id) {
+    public void onListItemSelected(GroceryItem item) {
+
+        Gson gson = new Gson();
 
         // the detail fragment is not in the view, most likely on a smaller device
         if (this.getFragmentManager().findFragmentById(R.id.detail_fragment) == null) {
             // launch a ItemDetail Activity
             // you can pass a data to an activity via Extras, then pass it along to the fragment
             Intent intent = new Intent(this, ItemDetailActivity.class);
-            intent.putExtra(ItemDetailFragment.ITEM_ID, id);
+            intent.putExtra(ItemDetailFragment.ITEM, gson.toJson(item));
 
             this.startActivity(intent);
         } else { // detail fragment is in view
             // update the existing detail fragment in the UI, usually by replacing it
             ItemDetailFragment fragment = new ItemDetailFragment();
             Bundle args = new Bundle();
-            args.putInt(ItemDetailFragment.ITEM_ID, id);
+            args.putString(ItemDetailFragment.ITEM, gson.toJson(item));
             fragment.setArguments(args);
 
             FragmentTransaction ft = this.getFragmentManager().beginTransaction();
