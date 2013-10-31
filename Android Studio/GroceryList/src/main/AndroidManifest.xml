@@ -55,6 +55,12 @@
             android:name="edu.uno.csci4661.grocerylist.ui.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        
+        <provider
+            android:authorities="edu.uno.csci4661.grocerylist"
+            android:name=".database.GroceryProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>
