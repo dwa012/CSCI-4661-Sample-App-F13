@@ -4,6 +4,9 @@ gen/
 build/
 local.properties
 .gradle/
+gradle/
+gradlew
+gradlew.bat
 # Old Android
 bin/
 
