@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
+
+import java.net.URI;
 
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailActivity;
@@ -75,7 +78,7 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
     }
 
     @Override
-    public void onListItemSelected(GroceryItem item) {
+    public void onListItemSelected(Uri item) {
 
         Gson gson = new Gson();
 
@@ -84,21 +87,19 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
             // launch a ItemDetail Activity
             // you can pass a data to an activity via Extras, then pass it along to the fragment
             Intent intent = new Intent(this, ItemDetailActivity.class);
-            intent.putExtra(ItemDetailFragment.ITEM, gson.toJson(item));
+            intent.putExtra("item_uri",item);
 
             this.startActivity(intent);
         } else { // detail fragment is in view
             // update the existing detail fragment in the UI, usually by replacing it
             ItemDetailFragment fragment = new ItemDetailFragment();
             Bundle args = new Bundle();
-            args.putString(ItemDetailFragment.ITEM, gson.toJson(item));
+            args.putParcelable("item_uri",item);
             fragment.setArguments(args);
 
             FragmentTransaction ft = this.getFragmentManager().beginTransaction();
             ft.replace(R.id.detail_fragment, fragment);
             ft.commit();
         }
-
-//        Toast.makeText(this, "id: " + id, Toast.LENGTH_SHORT).show();
     }
 }

@@ -3,7 +3,12 @@ package edu.uno.csci4661.grocerylist.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.ContentProvider;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +18,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
@@ -25,19 +34,22 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import edu.uno.csci4661.grocerylist.R;
 import edu.uno.csci4661.grocerylist.adapters.ItemListAdapter;
+import edu.uno.csci4661.grocerylist.adapters.ItemListCursorAdapter;
+import edu.uno.csci4661.grocerylist.database.GroceryProvider;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.model.ItemWrapper;
 
 public class ItemListFragment extends Fragment {
 
-    private ItemListAdapter adapter;
+    private CursorAdapter adapter;
 
     public interface ListFragmentListener {
-        public void onListItemSelected(GroceryItem item);
+        public void onListItemSelected(Uri itemUri);
     }
 
     private List<GroceryItem> items;
@@ -46,7 +58,7 @@ public class ItemListFragment extends Fragment {
 
     private ListFragmentListener listener = new ListFragmentListener() {
         @Override
-        public void onListItemSelected(GroceryItem item) {
+        public void onListItemSelected(Uri itemUri) {
             // left blank
         }
     };
@@ -56,16 +68,23 @@ public class ItemListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_list, container);
         ListView list = (ListView) view.findViewById(R.id.listview);
         items = new ArrayList<GroceryItem>();
+        Cursor c = getItems();
 
+//        adapter = new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items);
+        adapter = new ItemListCursorAdapter(this.getActivity(), c, -1);
 
-        adapter = new ItemListAdapter(this.getActivity(), R.layout.item_list_layout, items);
-
-        // have to use a custom listener since the button in the layout causes the listview listener
-        // to not work
-        adapter.setOnItemClickListener(new ItemListAdapter.OnItemClickListener() {
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClicked(int position, GroceryItem item) {
-                listener.onListItemSelected(item);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Cursor cursor = (Cursor)adapterView.getAdapter().getItem(position);
+
+                int idIndex = cursor.getColumnIndexOrThrow(GroceryProvider.KEY_ID);
+                int itemId = cursor.getInt(idIndex);
+
+                Log.d("grocery_list", itemId + "");
+                Uri uri = ContentUris.withAppendedId(GroceryProvider.CONTENT_URI,itemId);
+
+                listener.onListItemSelected(uri);
             }
         });
 
@@ -91,7 +110,14 @@ public class ItemListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        new FetchTask(this.getActivity()).execute();
+        Cursor c = getItems();
+        if(c.getCount() == 0){
+            new FetchTask(this.getActivity()).execute();
+        }
+    }
+
+    private Cursor getItems() {
+        return getActivity().getContentResolver().query(GroceryProvider.CONTENT_URI,null,null,null,null,null);
     }
 
     @Override
@@ -112,7 +138,7 @@ public class ItemListFragment extends Fragment {
         }
     }
 
-    private class FetchTask extends AsyncTask<Void, Integer, List<GroceryItem>> {
+    private class FetchTask extends AsyncTask<Void, Integer, Cursor> {
 
         private ProgressDialog progressDialog;
         private Context context;
@@ -134,9 +160,7 @@ public class ItemListFragment extends Fragment {
         }
 
         @Override
-        protected List<GroceryItem> doInBackground(Void... voids) {
-            List<GroceryItem> results = new ArrayList<GroceryItem>();
-
+        protected Cursor doInBackground(Void... voids) {
             HttpGet request = new HttpGet("http://csci4661-api.appspot.com/api/items");
 
             HttpClient httpClient = new DefaultHttpClient();
@@ -149,22 +173,27 @@ public class ItemListFragment extends Fragment {
 
                 Gson gson = new Gson();
                 ItemWrapper items = gson.fromJson(json, ItemWrapper.class);
-                results = items.getItems();
+
+                ContentValues[] values = new ContentValues[items.getItems().size()];
+
+                for (int i = 0; i < items.getItems().size(); i++) {
+                    values[i] = items.getItems().get(i).getContentValues();
+                }
+
+                getActivity().getContentResolver().bulkInsert(GroceryProvider.CONTENT_URI,values);
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            return results;
+            return getItems();
         }
 
         @Override
-        protected void onPostExecute(List<GroceryItem> groceryItems) {
-            ItemListFragment.this.items.clear();
-            ItemListFragment.this.items.addAll(groceryItems);
-            ItemListFragment.this.adapter.notifyDataSetChanged();
-
+        protected void onPostExecute(Cursor groceryItems) {
+            adapter.swapCursor(groceryItems);
             progressDialog.dismiss();
-
         }
     }
 }

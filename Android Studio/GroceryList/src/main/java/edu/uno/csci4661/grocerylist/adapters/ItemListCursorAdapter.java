@@ -10,6 +10,7 @@ import android.widget.CursorAdapter;
 import com.androidquery.AQuery;
 
 import edu.uno.csci4661.grocerylist.R;
+import edu.uno.csci4661.grocerylist.database.GroceryProvider;
 
 public class ItemListCursorAdapter extends CursorAdapter {
 
@@ -31,8 +32,10 @@ public class ItemListCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         aQuery = new AQuery(view);
 
-        // TODO add the proper indices here
-        aQuery.id(R.id.item_name).text(cursor.getInt(0));
-        aQuery.id(R.id.item_quantity).text(cursor.getInt(1));
+        int nameIndex = cursor.getColumnIndex(GroceryProvider.KEY_NAME);
+        int quantityIndex = cursor.getColumnIndex(GroceryProvider.KEY_QUANTITY);
+
+        aQuery.id(R.id.item_name).text(cursor.getString(nameIndex));
+//        aQuery.id(R.id.item_quantity).text(cursor.getInt(quantityIndex));
     }
 }

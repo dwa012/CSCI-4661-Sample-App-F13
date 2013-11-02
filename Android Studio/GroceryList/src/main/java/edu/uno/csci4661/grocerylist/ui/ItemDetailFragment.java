@@ -3,6 +3,8 @@ package edu.uno.csci4661.grocerylist.ui;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -46,9 +48,12 @@ public class ItemDetailFragment extends Fragment {
         }
 
         // this will throw an exeption if no id was given
-        String json = this.getArguments().getString(ITEM);
-        Gson gson = new Gson();
-        item = gson.fromJson(json, GroceryItem.class);
+        Uri uri = this.getArguments().getParcelable("item_uri");
+
+        Cursor c = getActivity().getContentResolver().query(uri,null,null,null,null);
+        c.moveToFirst();
+        item = new GroceryItem(c);
+        c.close();
 
         view = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
