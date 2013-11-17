@@ -13,6 +13,8 @@ import com.google.gson.Gson;
 
 import java.net.URI;
 
+import edu.uno.csci4661.grocerylist.auth.AuthActivity;
+import edu.uno.csci4661.grocerylist.auth.AuthPreferences;
 import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailActivity;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailFragment;
@@ -42,6 +44,13 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
     @Override
     protected void onStart() {
         super.onStart();
+
+        AuthPreferences authPreferences = new AuthPreferences(this);
+
+        if (authPreferences.getUser() == null) {
+            Intent intent = new Intent(this, AuthActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

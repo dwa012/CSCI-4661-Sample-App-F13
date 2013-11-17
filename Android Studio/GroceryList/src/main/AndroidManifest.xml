@@ -8,6 +8,10 @@
         android:minSdkVersion="16"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -55,11 +59,28 @@
             android:name="edu.uno.csci4661.grocerylist.ui.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
-        
+
         <provider
+            android:name="edu.uno.csci4661.grocerylist.database.GroceryProvider"
             android:authorities="edu.uno.csci4661.grocerylist"
-            android:name=".database.GroceryProvider"
+            android:label="@string/grocery_list_provider_label"
             android:exported="false" />
+
+        <activity
+            android:name="edu.uno.csci4661.grocerylist.auth.AuthActivity"
+            android:label="@string/title_activity_auth" >
+        </activity>
+
+        <service
+            android:name="edu.uno.csci4661.grocerylist.sync.MySyncService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/sync_adpater" />
+        </service>
 
     </application>
 

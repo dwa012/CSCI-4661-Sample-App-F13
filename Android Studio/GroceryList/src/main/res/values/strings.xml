@@ -12,5 +12,7 @@
     <string name="broadcast">Broadcast</string>
     <string name="title_activity_new_item">Add Item</string>
     <string name="preference_show_quantities">show_quantities</string>
+    <string name="title_activity_auth">AuthActivity</string>
+    <string name="grocery_list_provider_label">Grocery List</string>
 
 </resources>

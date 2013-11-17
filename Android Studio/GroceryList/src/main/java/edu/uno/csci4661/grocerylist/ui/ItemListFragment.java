@@ -112,7 +112,7 @@ public class ItemListFragment extends Fragment {
 
         Cursor c = getItems();
         if(c.getCount() == 0){
-            new FetchTask(this.getActivity()).execute();
+//            new FetchTask(this.getActivity()).execute();
         }
     }
 
@@ -131,7 +131,7 @@ public class ItemListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == this.item.getItemId()) {
-            new FetchTask(this.getActivity()).execute();
+//            new FetchTask(this.getActivity()).execute();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
