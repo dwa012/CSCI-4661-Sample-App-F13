@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="edu.uno.csci4661.grocerylist"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -18,10 +18,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="edu.uno.csci4661.grocerylist.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,21 +31,29 @@
         <activity
             android:name="edu.uno.csci4661.grocerylist.ui.ItemDetailActivity"
             android:label="@string/title_activity_item_detail"
-            android:parentActivityName="edu.uno.csci4661.grocerylist.MainActivity" >
+            android:parentActivityName="edu.uno.csci4661.grocerylist.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.uno.csci4661.grocerylist.MainActivity" />
         </activity>
 
-        <receiver android:name="edu.uno.csci4661.grocerylist.receivers.ItemReceiver" >
+        <receiver android:name="edu.uno.csci4661.grocerylist.receivers.ItemReceiver">
             <intent-filter>
                 <action android:name="edu.uno.csci4661.grocerylist.ITEM_BROADCAST" />
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.ItemAddedReceiver"
+            android:label="Item added receiver">
+            <intent-filter>
+                <action android:name="edu.uno.csci4661.grocerylist.new_item_added" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name="edu.uno.csci4661.grocerylist.ui.NewItemActivity"
-            android:label="@string/title_activity_new_item" >
+            android:label="@string/title_activity_new_item">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.VIEW" />
@@ -55,10 +63,10 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="edu.uno.csci4661.grocerylist.ui.SettingsActivity"
-            android:label="@string/title_activity_settings" >
-        </activity>
+            android:label="@string/title_activity_settings"></activity>
 
         <provider
             android:name="edu.uno.csci4661.grocerylist.database.GroceryProvider"
@@ -68,8 +76,7 @@
 
         <activity
             android:name="edu.uno.csci4661.grocerylist.auth.AuthActivity"
-            android:label="@string/title_activity_auth" >
-        </activity>
+            android:label="@string/title_activity_auth"></activity>
 
         <service
             android:name="edu.uno.csci4661.grocerylist.sync.MySyncService"
@@ -81,6 +88,10 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_adpater" />
         </service>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
     </application>
 

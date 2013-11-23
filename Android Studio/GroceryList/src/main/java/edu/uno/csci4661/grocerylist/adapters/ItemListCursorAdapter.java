@@ -36,6 +36,5 @@ public class ItemListCursorAdapter extends CursorAdapter {
         int quantityIndex = cursor.getColumnIndex(GroceryProvider.KEY_QUANTITY);
 
         aQuery.id(R.id.item_name).text(cursor.getString(nameIndex));
-//        aQuery.id(R.id.item_quantity).text(cursor.getInt(quantityIndex));
     }
 }

@@ -16,6 +16,7 @@ import edu.uno.csci4661.grocerylist.database.GroceryProvider;
  */
 public class AuthActivity extends Activity {
 
+    public static final String ACCOUNT_TYPE = "com.google";
     private static final int AUTHORIZATION_CODE = 1993;
     private static final int ACCOUNT_CODE = 1601;
 
@@ -23,10 +24,14 @@ public class AuthActivity extends Activity {
     private AccountManager accountManager;
 
     /**
-     * change this depending on the scope needed for the things you do in
-     * doCoolAuthenticatedStuff()
+     * Match this to the scope define in the AppEngine server
      */
-    private final String SCOPE = "https://www.googleapis.com/auth/userinfo.profile";
+    public static final String SCOPE = "https://www.googleapis.com/auth/userinfo.email";
+
+    /**
+     * Replace the AUDIENCE_ID in the string with the value defined in the server
+     */
+    public static final String AUDIENCE = "server:client_id:AUDIENCE_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

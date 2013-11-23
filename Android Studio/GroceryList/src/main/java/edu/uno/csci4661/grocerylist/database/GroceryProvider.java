@@ -24,6 +24,7 @@ public class GroceryProvider extends ContentProvider {
 
     // database columns
     public static final String KEY_ID = "_id";
+    public static final String KEY_REMOTE_ID = "remote_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_QUANTITY = "quantity";
@@ -35,6 +36,7 @@ public class GroceryProvider extends ContentProvider {
 
     // the URI matcher
     private static final UriMatcher uriMatcher;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI("edu.uno.csci4661.grocerylist", "items", ITEMS);
@@ -67,9 +69,11 @@ public class GroceryProvider extends ContentProvider {
 
         // If this is a row query, limit the result set to the passed in row.
         switch (uriMatcher.match(uri)) {
-            case ITEM_ID: qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
+            case ITEM_ID:
+                qb.appendWhere(KEY_ID + "=" + uri.getPathSegments().get(1));
                 break;
-            default      : break;
+            default:
+                break;
         }
 
         // If no sort order is specified, sort by date / time
@@ -98,15 +102,26 @@ public class GroceryProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)) {
-            case ITEMS: return "vnd.android.cursor.dir/edu.uno.csci4661.grocerylist";
-            case ITEM_ID: return "vnd.android.cursor.item/edu.uno.csci4661.grocerylist";
-            default: throw new IllegalArgumentException("Unsupported URI: " + uri);
+            case ITEMS:
+                return "vnd.android.cursor.dir/edu.uno.csci4661.grocerylist";
+            case ITEM_ID:
+                return "vnd.android.cursor.item/edu.uno.csci4661.grocerylist";
+            default:
+                throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long id = db.insertWithOnConflict(GroceryDatabaseHelper.ITEM_TABLE, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+
+        Uri result = null;
+        if (id > 0) {
+            result = Uri.withAppendedPath(CONTENT_URI, "" + id);
+        }
+
+        return result;
     }
 
     @Override
@@ -129,6 +144,7 @@ public class GroceryProvider extends ContentProvider {
         private static final String DATABASE_CREATE =
                 "create table " + ITEM_TABLE + " ("
                         + KEY_ID + " integer primary key autoincrement, "
+                        + KEY_REMOTE_ID + " TEXT UNIQUE, "
                         + KEY_NAME + " TEXT, "
                         + KEY_DESCRIPTION + " TEXT, "
                         + KEY_QUANTITY + " INTEGER);";

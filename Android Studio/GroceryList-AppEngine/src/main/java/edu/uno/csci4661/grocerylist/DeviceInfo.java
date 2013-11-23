@@ -39,6 +39,8 @@ public class DeviceInfo {
      */
     private String deviceInformation;
 
+    private String userEmail;
+
     /*
      * Timestamp indicating when this device registered with the application.
      */
@@ -62,6 +64,14 @@ public class DeviceInfo {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
     public void setTimestamp(long timestamp) {

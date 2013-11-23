@@ -1,1 +1,1 @@
-include ':GroceryList'
+include ':GroceryList', ':GroceryList-endpoints'

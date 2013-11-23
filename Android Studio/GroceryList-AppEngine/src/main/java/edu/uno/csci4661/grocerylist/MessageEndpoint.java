@@ -1,13 +1,5 @@
 package edu.uno.csci4661.grocerylist;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.Nullable;
-import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
@@ -17,7 +9,16 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.oauth.OAuthRequestException;
 import com.google.appengine.datanucleus.query.JPACursorHelper;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 
 /**
@@ -46,14 +47,6 @@ import com.google.appengine.datanucleus.query.JPACursorHelper;
 @Api(name = "messageEndpoint", namespace = @ApiNamespace(ownerDomain = "uno.edu", ownerName = "uno.edu", packagePath = "csci4661.grocerylist"))
 // NO AUTHENTICATION; OPEN ENDPOINT!
 public class MessageEndpoint {
-
-    /*
-     * TODO: Fill this in with the server key that you've obtained from the API
-     * Console (https://code.google.com/apis/console). This is required for using
-     * Google Cloud Messaging from your AppEngine application even if you are
-     * using a App Engine's local development server.
-     */
-    private static final String API_KEY = "";
 
     private static final DeviceInfoEndpoint endpoint = new DeviceInfoEndpoint();
 
@@ -121,8 +114,8 @@ public class MessageEndpoint {
      */
     @ApiMethod(name = "sendMessage")
     public void sendMessage(@Named("message") String message)
-            throws IOException {
-        Sender sender = new Sender(API_KEY);
+            throws IOException, OAuthRequestException {
+        Sender sender = new Sender(edu.uno.csci4661.grocerylist.Constants.API_KEY);
         // create a MessageData entity with a timestamp of when it was
         // received, and persist it
         MessageData messageObj = new MessageData();
@@ -135,8 +128,7 @@ public class MessageEndpoint {
             mgr.close();
         }
         // ping a max of 10 registered devices
-        CollectionResponse<DeviceInfo> response = endpoint.listDeviceInfo(null,
-                10);
+        CollectionResponse<DeviceInfo> response = endpoint.listDeviceInfo(null, 10, null);
         for (DeviceInfo deviceInfo : response.getItems()) {
             doSendViaGcm(message, sender, deviceInfo);
         }

@@ -5,23 +5,24 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import java.net.URI;
-
 import edu.uno.csci4661.grocerylist.auth.AuthActivity;
 import edu.uno.csci4661.grocerylist.auth.AuthPreferences;
-import edu.uno.csci4661.grocerylist.model.GroceryItem;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailActivity;
 import edu.uno.csci4661.grocerylist.ui.ItemDetailFragment;
 import edu.uno.csci4661.grocerylist.ui.ItemListFragment;
 import edu.uno.csci4661.grocerylist.ui.SettingsActivity;
 
 public class MainActivity extends Activity implements ItemListFragment.ListFragmentListener {
+
+    private int REGISTER_ACTIVITY_REQ_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,24 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
         if (authPreferences.getUser() == null) {
             Intent intent = new Intent(this, AuthActivity.class);
             startActivity(intent);
+        } else {
+            new AsyncTask<Object, Object, Object>() {
+                @Override
+                protected Object doInBackground(Object... objects) {
+                    GCMIntentService.register(getApplicationContext());
+                    return null;
+                }
+            }.execute();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //  Toast.makeText(this, requestCode + " " + resultCode + ";", Toast.LENGTH_LONG).show();
+        if (requestCode == REGISTER_ACTIVITY_REQ_CODE) {
+            if (resultCode != RESULT_OK) {
+                Toast.makeText(this, "Could not register for GCM", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -96,14 +115,14 @@ public class MainActivity extends Activity implements ItemListFragment.ListFragm
             // launch a ItemDetail Activity
             // you can pass a data to an activity via Extras, then pass it along to the fragment
             Intent intent = new Intent(this, ItemDetailActivity.class);
-            intent.putExtra("item_uri",item);
+            intent.putExtra("item_uri", item);
 
             this.startActivity(intent);
         } else { // detail fragment is in view
             // update the existing detail fragment in the UI, usually by replacing it
             ItemDetailFragment fragment = new ItemDetailFragment();
             Bundle args = new Bundle();
-            args.putParcelable("item_uri",item);
+            args.putParcelable("item_uri", item);
             fragment.setArguments(args);
 
             FragmentTransaction ft = this.getFragmentManager().beginTransaction();
